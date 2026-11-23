@@ -23,8 +23,8 @@
 #   3. Select GitHub Actions and fill in:
 #        Repository owner: <your-github-username-or-org>
 #        Repository name:  <your-repo-name>
-#        Workflow name:    publish.yml
-#        Environment:      (leave blank unless you use GitHub Environments)
+#        Workflow name:    release.yml
+#        Environment:      npm
 #   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC
 #      token is used instead — no secret ever touches your repo settings.
 #
@@ -45,12 +45,10 @@
 #
 # ─── RELEASE PROCESS ───────────────────────────────────────────────────────────
 #
-# Run the following command locally to start an interactive release:
-#
-#   npm run release
-#
-# This will lint, build, prompt for a version bump, update the changelog,
-# commit, tag, and push — which triggers this workflow to publish to npm.
+# The first version is published from the owner's computer (`bin/release --first`),
+# because npm trusts a workflow only for a package it already has. Every later
+# version: bump package.json and CHANGELOG.md on main, then run `bin/release`.
+# It pushes the version tag, which triggers this workflow to publish to npm.
 
 name: Publish
 
@@ -65,6 +63,7 @@ jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
+    environment: npm
 
     permissions:
       # Required to mint an OIDC token for npm provenance attestation.

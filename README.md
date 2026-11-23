@@ -145,6 +145,10 @@ pnpm dev   # n8n on http://localhost:5678 with this node loaded
 `pnpm test` checks every envelope the node builds against memo's schema and, when `memo` is installed, with
 `memo records check` on a throwaway store.
 
+To release, bump the version in `package.json` and `CHANGELOG.md` on `main` and run `bin/release`. It pushes the
+version tag, and [release.yml](.github/workflows/release.yml) publishes to npm with provenance, which n8n's
+verification requires.
+
 ## License
 
 [MIT](LICENSE)

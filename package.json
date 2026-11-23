@@ -15,7 +15,10 @@
   ],
   "author": {
     "name": "Viacheslav Ptsarev",
-    "email": "leemour@gmail.com"
+    "email": "hello@wirecat.dev"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
