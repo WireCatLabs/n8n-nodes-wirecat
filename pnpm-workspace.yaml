@@ -1,0 +1,7 @@
+# pnpm 11 runs no dependency install script unless it is named here.
+allowBuilds:
+  esbuild: true
+  cpu-features: false
+  eslint-plugin-n8n-nodes-base: false
+  isolated-vm: false
+  ssh2: false

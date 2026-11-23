@@ -1,0 +1,159 @@
+{
+  "name": "WireCat: CRM deal into memo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wirecat-deal",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Deal webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "webhookId": "082304f4-4b72-45aa-bcd3-6bb0f7a5dec1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "deleted",
+              "leftValue": "={{ $json.body.deleted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Deleted in the CRM?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "resource": "deal",
+        "operation": "delete",
+        "account": "n8n:deals",
+        "id": "={{ $json.body.id }}"
+      },
+      "name": "Delete deal in memo",
+      "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
+      "typeVersion": 1,
+      "position": [520, -120],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "deal",
+        "operation": "upsert",
+        "account": "n8n:deals",
+        "id": "={{ $json.body.id }}",
+        "title": "={{ $json.body.title }}",
+        "stage": "={{ $json.body.stage || 'new' }}",
+        "contactName": "={{ $json.body.contact }}",
+        "email": "={{ $json.body.email }}",
+        "phone": "={{ $json.body.phone }}",
+        "company": "={{ $json.body.company }}",
+        "additionalFields": {
+          "amount": "={{ $json.body.amount }}",
+          "currency": "={{ $json.body.currency }}",
+          "closeDate": "={{ $json.body.close_date }}"
+        }
+      },
+      "name": "Deal into memo",
+      "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
+      "typeVersion": 1,
+      "position": [520, 120],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"ok\": true\n}",
+        "options": {}
+      },
+      "name": "Answer ok",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [780, 0]
+    }
+  ],
+  "connections": {
+    "Deal webhook": {
+      "main": [
+        [
+          {
+            "node": "Deleted in the CRM?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deleted in the CRM?": {
+      "main": [
+        [
+          {
+            "node": "Delete deal in memo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Deal into memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete deal in memo": {
+      "main": [
+        [
+          {
+            "node": "Answer ok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal into memo": {
+      "main": [
+        [
+          {
+            "node": "Answer ok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

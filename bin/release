@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+// Releases the version in package.json.
+//
+//   bin/release           tag it; .github/workflows/release.yml publishes it to npm with provenance
+//   bin/release --first   publish from this computer, for the package's first version only
+//
+// npm trusts a workflow only for a package it already has, so the first version is published here, without
+// provenance, and n8n's verification takes the next version, the first one release.yml publishes. After --first,
+// run the npm-trust command it prints.
+import { spawnSync } from "node:child_process"
+import { readFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..")
+const PACKAGE_JSON = join(ROOT, "package.json")
+const NPM_TRUST = "/home/leemour/.claude/skills/npm-trusted-publisher/bin/npm-trust"
+
+const { name, version } = JSON.parse(readFileSync(PACKAGE_JSON, "utf8"))
+const first = process.argv.includes("--first")
+
+const run = (program, args, env = {}) => {
+  const result = spawnSync(program, args, { cwd: ROOT, stdio: "inherit", env: { ...process.env, ...env } })
+  if (result.status !== 0) fail(`${program} ${args.join(" ")} failed`)
+}
+const read = (program, args) => spawnSync(program, args, { cwd: ROOT, encoding: "utf8" })
+const fail = (message) => {
+  process.stderr.write(`${message}\n`)
+  process.exit(1)
+}
+
+run("git", ["fetch", "-q", "--tags", "origin"])
+if (read("git", ["branch", "--show-current"]).stdout.trim() !== "main") fail("run from main")
+if (read("git", ["status", "--porcelain", "--untracked-files=no"]).stdout.trim()) fail("uncommitted changes")
+if (read("git", ["rev-parse", "HEAD"]).stdout !== read("git", ["rev-parse", "origin/main"]).stdout) {
+  fail("update main to origin/main first")
+}
+if (read("npm", ["view", `${name}@${version}`, "version"]).stdout.trim()) fail(`${name} ${version} is already on npm`)
+const onNpm = Boolean(read("npm", ["view", name, "version"]).stdout.trim())
+
+if (first) {
+  if (onNpm) fail(`${name} is already on npm: --first is for its first version, run bin/release`)
+  if (read("npm", ["whoami"]).status !== 0) run("npm", ["login", "--auth-type=web", "--browser=false"])
+  run("pnpm", ["install", "--frozen-lockfile"])
+  run("pnpm", ["lint"])
+  run("pnpm", ["build"])
+  // prepublishOnly (n8n-node prerelease) refuses a publish without RELEASE_MODE.
+  run("npm", ["publish", "--access", "public"], { RELEASE_MODE: "true" })
+  process.stdout.write(`\nPublished ${name} ${version}. Now let npm trust release.yml:\n  ${NPM_TRUST} ${ROOT}\n`)
+  process.exit(0)
+}
+
+if (!onNpm) fail(`${name} is not on npm yet: run bin/release --first`)
+run("git", ["tag", "-a", version, "-m", `${name} ${version}`])
+run("git", ["push", "origin", version])
+process.stdout.write(`Tagged ${version}. release.yml publishes it: gh run list --workflow release.yml\n`)
