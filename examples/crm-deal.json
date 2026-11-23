@@ -5,6 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "wirecat-deal",
+        "authentication": "headerAuth",
         "responseMode": "lastNode",
         "options": {}
       },
@@ -85,6 +86,17 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"ok\": true\n}",
+        "options": {}
+      },
+      "name": "Answer ok",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [780, 0]
     }
   ],
   "connections": {
@@ -111,6 +123,28 @@
         [
           {
             "node": "Deal into memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete deal in memo": {
+      "main": [
+        [
+          {
+            "node": "Answer ok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal into memo": {
+      "main": [
+        [
+          {
+            "node": "Answer ok",
             "type": "main",
             "index": 0
           }

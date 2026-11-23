@@ -18,6 +18,11 @@ export interface ToolResult {
 
 export class McpError extends Error {}
 
+interface Answered {
+  answer: HttpAnswer
+  result: Record<string, unknown>
+}
+
 // The 2025 protocol with a session is what memo serves to every app's MCP client, n8n's own included.
 const PROTOCOL = "2025-06-18"
 
@@ -70,13 +75,19 @@ export class McpSession {
     }
   }
 
-  private async request(method: string, params: Record<string, unknown>) {
+  private async request(method: string, params: Record<string, unknown>, again = true): Promise<Answered> {
     const id = this.next++
     const answer = await this.send({
       method: "POST",
       headers: this.headers(),
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     })
+    // memo keeps 20 sessions and drops the oldest, or one idle for an hour: a new one, and the call once more.
+    if (answer.status === 404 && this.id && again) {
+      this.id = undefined
+      await this.open()
+      return this.request(method, params, false)
+    }
     const reply = messagesOf(answer).find((message) => message.id === id)
     if (!reply) throw new McpError(`memo gave no answer to ${method} (HTTP ${answer.status})`)
     const error = reply.error as { message?: string } | undefined

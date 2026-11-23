@@ -39,7 +39,7 @@ const deal = {
 /** One envelope for each thing the node builds, as memo receives it. */
 export const builtEnvelopes: Record<string, Envelope> = {
   lead: envelopeOf("n8n:test", "t-lead", dealRecords("lead", lead)),
-  deal: envelopeOf("n8n:test", "t-deal", dealRecords("deal", deal)),
+  deal: envelopeOf("n8n:test", "t-deal", dealRecords("deal", deal, { organization: false })),
   "deal with own stages": envelopeOf(
     "n8n:test",
     "t-stages",
@@ -57,7 +57,10 @@ export const builtEnvelopes: Record<string, Envelope> = {
   person: envelopeOf(
     "n8n:test",
     "t-person",
-    personRecords({ name: "Carla Example", email: "carla@example.com", company: "Example Clinic", position: "CTO" }),
+    personRecords(
+      { name: "Carla Example", email: "carla@example.com", company: "Example Clinic", position: "CTO" },
+      { organization: false },
+    ),
   ),
   organization: envelopeOf("n8n:test", "t-org", organizationRecords({ name: "Example Clinic", domain: "Example.org" })),
 }

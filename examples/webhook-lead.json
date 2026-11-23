@@ -5,6 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "wirecat-lead",
+        "authentication": "headerAuth",
         "responseMode": "lastNode",
         "options": {}
       },
@@ -19,7 +20,7 @@
         "resource": "lead",
         "operation": "upsert",
         "account": "n8n:site",
-        "id": "={{ $json.body.id || $execution.id }}",
+        "id": "={{ $json.body.id }}",
         "title": "={{ [$json.body.name, $json.body.message].filter(Boolean).join(': ') || $json.body.email || $json.body.phone }}",
         "contactName": "={{ $json.body.name }}",
         "email": "={{ $json.body.email }}",
@@ -33,6 +34,17 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"ok\": true\n}",
+        "options": {}
+      },
+      "name": "Answer ok",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [520, 0]
     }
   ],
   "connections": {
@@ -41,6 +53,17 @@
         [
           {
             "node": "Lead into memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead into memo": {
+      "main": [
+        [
+          {
+            "node": "Answer ok",
             "type": "main",
             "index": 0
           }

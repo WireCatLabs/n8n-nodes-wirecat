@@ -37,7 +37,7 @@
         "resource": "lead",
         "operation": "upsert",
         "account": "n8n:site",
-        "id": "=form-{{ $execution.id }}",
+        "id": "={{ \"form-\" + [$json.Name, $json.Email, $json.Phone, $json.Message, $json.submittedAt].join(\"|\").hash(\"sha256\").slice(0, 16) }}",
         "title": "={{ [$json.Name, $json.Message].filter(Boolean).join(': ') }}",
         "contactName": "={{ $json.Name }}",
         "email": "={{ $json.Email }}",

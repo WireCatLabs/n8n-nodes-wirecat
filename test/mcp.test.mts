@@ -77,3 +77,22 @@ describe("McpSession", () => {
     ).toEqual([{ method: "notifications/progress" }, { id: 3 }])
   })
 })
+
+describe("a session memo dropped", () => {
+  it("is opened again once and the call repeated; a second 404 is an error", async () => {
+    const memo = fakeMemo((id) => sse({ jsonrpc: "2.0", id, result: { structuredContent: { ok: true } } }))
+    let gone = 1
+    const send: Send = async (request) => {
+      const body = request.body ? (JSON.parse(request.body) as { method?: string }) : {}
+      if (body.method === "tools/call" && gone-- > 0) return { status: 404, headers: {}, body: "" }
+      return memo.send(request)
+    }
+    const session = new McpSession(send, { name: "test", version: "1" })
+    await session.open()
+    expect(await session.call("memo_read", {})).toMatchObject({ isError: false })
+    expect(memo.sent.filter((one) => one.body?.method === "initialize")).toHaveLength(2)
+
+    gone = 2
+    await expect(session.call("memo_read", {})).rejects.toThrow(/no answer to tools\/call \(HTTP 404\)/)
+  })
+})

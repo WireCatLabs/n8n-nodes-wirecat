@@ -18,7 +18,12 @@ const operations: INodeProperties[] = [
         description: "Create a new record, or update the current one if it already exists (upsert)",
         action: "Create or update a record",
       },
-      { name: "Delete", value: "delete", description: "Mark it deleted at the source", action: "Delete a record" },
+      {
+        name: "Delete",
+        value: "delete",
+        description: "Tell memo the source deleted it. Memo keeps the record and marks it deleted at the source.",
+        action: "Delete a record",
+      },
     ],
     default: "upsert",
   },
@@ -208,20 +213,12 @@ const recordFields: INodeProperties[] = [
     displayName: "ID",
     name: "id",
     type: "string",
-    default: "={{ $execution.id }}-{{ $itemIndex }}",
-    required: true,
-    description:
-      "The record's ID at the source. Sending the same ID again updates the record instead of adding another, so map a stable ID when the source has one.",
-    displayOptions: on(["lead"]),
-  },
-  {
-    displayName: "ID",
-    name: "id",
-    type: "string",
     default: "",
     required: true,
-    description: "The deal's ID in your CRM. Sending the same ID again updates the deal.",
-    displayOptions: on(["deal"]),
+    placeholder: "web-17",
+    description:
+      "The record's ID at the source, such as the form submission's or the CRM's. The same ID sent again updates the record instead of adding another, also when n8n retries the execution.",
+    displayOptions: on(["lead", "deal"]),
   },
   {
     displayName: "Title",
@@ -257,7 +254,15 @@ const recordFields: INodeProperties[] = [
     default: {},
     displayOptions: on(["lead", "deal"], ["upsert"]),
     options: [
-      { displayName: "Amount", name: "amount", type: "string", default: "", placeholder: "1500.00" },
+      {
+        displayName: "Amount",
+        name: "amount",
+        type: "string",
+        default: "",
+        placeholder: "1500.00",
+        description:
+          "A number, with a dot for decimals. 1,500.00 and 1500,50 are read too; 1,500 and 1.500,00 are refused, because they read two ways.",
+      },
       { displayName: "Close Date", name: "closeDate", type: "string", default: "", placeholder: "2026-12-31" },
       { displayName: "Currency", name: "currency", type: "string", default: "", placeholder: "EUR" },
       { displayName: "URL", name: "url", type: "string", default: "", description: "The source's page for it" },
