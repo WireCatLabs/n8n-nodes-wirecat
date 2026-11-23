@@ -1,0 +1,55 @@
+{
+  "name": "WireCat: webhook lead into memo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wirecat-lead",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Lead webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "webhookId": "858e984d-96cc-4941-b1d4-baa9ac0c802b"
+    },
+    {
+      "parameters": {
+        "resource": "lead",
+        "operation": "upsert",
+        "account": "n8n:site",
+        "id": "={{ $json.body.id || $execution.id }}",
+        "title": "={{ [$json.body.name, $json.body.message].filter(Boolean).join(': ') || $json.body.email || $json.body.phone }}",
+        "contactName": "={{ $json.body.name }}",
+        "email": "={{ $json.body.email }}",
+        "phone": "={{ $json.body.phone }}",
+        "company": "={{ $json.body.company }}"
+      },
+      "name": "Lead into memo",
+      "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
+      "typeVersion": 1,
+      "position": [260, 0],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Lead webhook": {
+      "main": [
+        [
+          {
+            "node": "Lead into memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

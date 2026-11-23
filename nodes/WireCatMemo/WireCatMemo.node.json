@@ -1,0 +1,10 @@
+{
+  "node": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Data & Storage", "Sales"],
+  "resources": {
+    "credentialDocumentation": [{ "url": "https://github.com/WireCatLabs/n8n-nodes-wirecat#credentials" }],
+    "primaryDocumentation": [{ "url": "https://github.com/WireCatLabs/n8n-nodes-wirecat#readme" }]
+  }
+}

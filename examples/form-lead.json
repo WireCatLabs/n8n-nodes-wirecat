@@ -1,0 +1,72 @@
+{
+  "name": "WireCat: form lead into memo",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Leave your contacts and we will get back to you.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Phone"
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Lead form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [0, 0],
+      "webhookId": "a712f841-c4cb-48cc-9c25-83e047b33281"
+    },
+    {
+      "parameters": {
+        "resource": "lead",
+        "operation": "upsert",
+        "account": "n8n:site",
+        "id": "=form-{{ $execution.id }}",
+        "title": "={{ [$json.Name, $json.Message].filter(Boolean).join(': ') }}",
+        "contactName": "={{ $json.Name }}",
+        "email": "={{ $json.Email }}",
+        "phone": "={{ $json.Phone }}"
+      },
+      "name": "Lead into memo",
+      "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
+      "typeVersion": 1,
+      "position": [260, 0],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Lead form": {
+      "main": [
+        [
+          {
+            "node": "Lead into memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
