@@ -30,7 +30,7 @@ export interface Envelope {
   records: EnvelopeRecord[]
 }
 
-/** A record memo already keeps for this account, as `records list` returns it. */
+/** A record wcat already keeps for this account, as `records list` returns it. */
 export interface Stored {
   fields: Record<string, unknown>
 }
@@ -56,7 +56,7 @@ export interface DealFields extends Contact {
 }
 
 /**
- * What the node learned from memo before sending. `organization` is true when memo keeps that organization's record,
+ * What the node learned from wcat before sending. `organization` is true when wcat keeps that organization's record,
  * false when it does not, and undefined when the node could not tell.
  */
 export interface Known {
@@ -101,7 +101,7 @@ export const envelopeOf = (account: string, batchId: string, records: EnvelopeRe
 
 /**
  * Only a form the amount cannot be misread in: "1,500" is one and a half thousand in one country and one and a half in
- * another, and memo would keep whichever the node guessed.
+ * another, and wcat would keep whichever the node guessed.
  */
 export const amountOf = (value: unknown): string | undefined => {
   if (typeof value === "number") {
@@ -146,7 +146,7 @@ const record = (type: string, externalId: string, fields: Record<string, unknown
 })
 
 /**
- * memo replaces a record's fields whole, so a company named on a lead only becomes a record when memo has none: an
+ * wcat replaces a record's fields whole, so a company named on a lead only becomes a record when wcat has none: an
  * Organization node's domain is never wiped by a lead that knows the name alone. Unknown means link, don't send.
  */
 const companyRecords = (company: string | undefined, exists: boolean | undefined): EnvelopeRecord[] =>
@@ -161,11 +161,11 @@ const storedStages = (pipeline: Stored): Stage[] =>
   )
 
 /**
- * A lead or a deal needs its pipeline record in memo, or it waits for one. The node sends the pipeline when the user
- * gave stages, or when memo has none yet; otherwise it leaves the stored stages alone.
+ * A lead or a deal needs its pipeline record in wcat, or it waits for one. The node sends the pipeline when the user
+ * gave stages, or when wcat has none yet; otherwise it leaves the stored stages alone.
  *
  * The contact goes in a record of the lead's own (`lead:<id>`), never in the record a Person node keeps for that
- * e-mail: memo links both to the same person by the e-mail or phone, and neither send wipes the other's fields.
+ * e-mail: wcat links both to the same person by the e-mail or phone, and neither send wipes the other's fields.
  */
 export const dealRecords = (kind: Kind, input: DealFields, known: Known = {}): EnvelopeRecord[] => {
   const id = clean(input.id)

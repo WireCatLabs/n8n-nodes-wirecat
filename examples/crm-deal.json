@@ -1,5 +1,5 @@
 {
-  "name": "WireCat: CRM deal into memo",
+  "name": "WireCat: CRM deal into wcat",
   "nodes": [
     {
       "parameters": {
@@ -53,7 +53,7 @@
         "account": "n8n:deals",
         "id": "={{ $json.body.id }}"
       },
-      "name": "Delete deal in memo",
+      "name": "Delete deal in wcat",
       "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
       "typeVersion": 1,
       "position": [520, -120],
@@ -79,7 +79,7 @@
           "closeDate": "={{ $json.body.close_date }}"
         }
       },
-      "name": "Deal into memo",
+      "name": "Deal into wcat",
       "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
       "typeVersion": 1,
       "position": [520, 120],
@@ -115,21 +115,21 @@
       "main": [
         [
           {
-            "node": "Delete deal in memo",
+            "node": "Delete deal in wcat",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Deal into memo",
+            "node": "Deal into wcat",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Delete deal in memo": {
+    "Delete deal in wcat": {
       "main": [
         [
           {
@@ -140,7 +140,7 @@
         ]
       ]
     },
-    "Deal into memo": {
+    "Deal into wcat": {
       "main": [
         [
           {

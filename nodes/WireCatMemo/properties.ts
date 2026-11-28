@@ -21,7 +21,7 @@ const operations: INodeProperties[] = [
       {
         name: "Delete",
         value: "delete",
-        description: "Tell memo the source deleted it. Memo keeps the record and marks it deleted at the source.",
+        description: "Tell wcat the source deleted it. wcat keeps the record and marks it deleted at the source.",
         action: "Delete a record",
       },
     ],
@@ -50,7 +50,7 @@ const operations: INodeProperties[] = [
     noDataExpression: true,
     displayOptions: on(["envelope"]),
     options: [
-      { name: "Import", value: "import", description: "Write its records into memo", action: "Import an envelope" },
+      { name: "Import", value: "import", description: "Write its records into wcat", action: "Import an envelope" },
       {
         name: "Check",
         value: "check",
@@ -70,19 +70,19 @@ const operations: INodeProperties[] = [
       {
         name: "Search",
         value: "search",
-        description: "Search everything memo keeps",
+        description: "Search everything wcat keeps",
         action: "Search memory",
       },
       {
         name: "Run Read Command",
         value: "read",
-        description: "Run one memo command that only reads, such as leads list",
+        description: "Run one wcat command that only reads, such as leads list",
         action: "Run a read command",
       },
       {
         name: "Find Command",
         value: "findCommand",
-        description: "List the commands memo offers and the arguments each takes",
+        description: "List the commands wcat offers and the arguments each takes",
         action: "Find a command",
       },
     ],
@@ -106,7 +106,7 @@ const contactFields = (resources: string[]): INodeProperties[] => [
     type: "string",
     placeholder: "name@email.com",
     default: "",
-    description: "Memo links the record to the one person with this e-mail, or makes that person",
+    description: "Links the record in wcat to the one person with this e-mail, or makes that person",
     displayOptions: on(resources, ["upsert"]),
   },
   {
@@ -206,7 +206,7 @@ const recordFields: INodeProperties[] = [
     default: "n8n:site",
     required: true,
     description:
-      "The source in memo, as provider:name. Everything one workflow sends goes to one account, and memo records clear --account removes it whole.",
+      "The source in wcat, as provider:name. Everything one workflow sends goes to one account, and wcat records clear --account removes it whole.",
     displayOptions: on(recordTypes),
   },
   {
@@ -300,7 +300,7 @@ const recordFields: INodeProperties[] = [
         type: "string",
         default: "",
         placeholder: "example.com",
-        description: "Memo links the record to the organization with this domain",
+        description: "Links the record in wcat to the organization with this domain",
       },
       {
         displayName: "ID",
@@ -321,7 +321,7 @@ const envelopeFields: INodeProperties[] = [
     default:
       '{\n  "schema_version": 1,\n  "source": { "provider": "n8n", "account": "site", "batch_id": "" },\n  "records": []\n}',
     required: true,
-    description: "A records envelope as memo records templates show prints it. Its source names the account.",
+    description: "A records envelope as wcat records templates show prints it. Its source names the account.",
     displayOptions: on(["envelope"]),
   },
 ]
@@ -378,7 +378,7 @@ const options: INodeProperties = {
       name: "batchId",
       type: "string",
       default: "",
-      description: "A label for this import on memo's receipt. Without it the execution ID and the item number.",
+      description: "A label for this import on wcat's receipt. Without it the execution ID and the item number.",
     },
   ],
 }

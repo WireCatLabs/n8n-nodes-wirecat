@@ -1,5 +1,5 @@
 {
-  "name": "WireCat: webhook lead into memo",
+  "name": "WireCat: webhook lead into wcat",
   "nodes": [
     {
       "parameters": {
@@ -27,7 +27,7 @@
         "phone": "={{ $json.body.phone }}",
         "company": "={{ $json.body.company }}"
       },
-      "name": "Lead into memo",
+      "name": "Lead into wcat",
       "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
       "typeVersion": 1,
       "position": [260, 0],
@@ -52,14 +52,14 @@
       "main": [
         [
           {
-            "node": "Lead into memo",
+            "node": "Lead into wcat",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Lead into memo": {
+    "Lead into wcat": {
       "main": [
         [
           {

@@ -23,7 +23,7 @@ interface Answered {
   result: Record<string, unknown>
 }
 
-// The 2025 protocol with a session is what memo serves to every app's MCP client, n8n's own included.
+// The 2025 protocol with a session is what wcat serves to every app's MCP client, n8n's own included.
 const PROTOCOL = "2025-06-18"
 
 const header = (headers: HttpAnswer["headers"], name: string) => {
@@ -82,16 +82,16 @@ export class McpSession {
       headers: this.headers(),
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     })
-    // memo keeps 20 sessions and drops the oldest, or one idle for an hour: a new one, and the call once more.
+    // wcat keeps 20 sessions and drops the oldest, or one idle for an hour: a new one, and the call once more.
     if (answer.status === 404 && this.id && again) {
       this.id = undefined
       await this.open()
       return this.request(method, params, false)
     }
     const reply = messagesOf(answer).find((message) => message.id === id)
-    if (!reply) throw new McpError(`memo gave no answer to ${method} (HTTP ${answer.status})`)
+    if (!reply) throw new McpError(`wcat gave no answer to ${method} (HTTP ${answer.status})`)
     const error = reply.error as { message?: string } | undefined
-    if (error) throw new McpError(`memo refused ${method}: ${error.message ?? JSON.stringify(error)}`)
+    if (error) throw new McpError(`wcat refused ${method}: ${error.message ?? JSON.stringify(error)}`)
     return { answer, result: reply.result as Record<string, unknown> }
   }
 

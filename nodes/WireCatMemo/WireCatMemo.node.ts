@@ -29,14 +29,14 @@ const failure = (fn: IExecuteFunctions, error: unknown, itemIndex: number) => {
 
 export class WireCatMemo implements INodeType {
   description: INodeTypeDescription = {
-    displayName: "WireCat Memo",
+    displayName: "WireCat",
     name: "wireCatMemo",
     icon: { light: "file:wirecat.svg", dark: "file:wirecat.dark.svg" },
     group: ["output"],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-    description: "Send leads, deals, people and organizations into WireCat memo, and search what it keeps",
-    defaults: { name: "WireCat Memo" },
+    description: "Send leads, deals, people and organizations into WireCat, and search what it keeps",
+    defaults: { name: "WireCat" },
     usableAsTool: true,
     inputs: [NodeConnectionTypes.Main],
     outputs: [NodeConnectionTypes.Main],

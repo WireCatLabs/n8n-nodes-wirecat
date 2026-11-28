@@ -26,6 +26,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: npm install --global @wirecat/cli-memo@0.149.0
+      - run: npm install --global @wirecat/wirecat
       - run: pnpm test
       - run: pnpm build

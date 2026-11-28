@@ -1,14 +1,14 @@
 {
   "name": "@wirecat/n8n-nodes-wirecat",
   "version": "0.1.0",
-  "description": "n8n node for WireCat memo: send leads, deals, people and organizations from any workflow into your own local memory",
+  "description": "n8n node for WireCat: send leads, deals, people and organizations from any workflow into your own local memory",
   "license": "MIT",
   "homepage": "https://github.com/WireCatLabs/n8n-nodes-wirecat#readme",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
     "wirecat",
-    "memo",
+    "wcat",
     "mcp",
     "crm",
     "leads"
