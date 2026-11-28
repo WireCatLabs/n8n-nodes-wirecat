@@ -1,5 +1,5 @@
 {
-  "name": "WireCat: form lead into memo",
+  "name": "WireCat: form lead into wcat",
   "nodes": [
     {
       "parameters": {
@@ -43,7 +43,7 @@
         "email": "={{ $json.Email }}",
         "phone": "={{ $json.Phone }}"
       },
-      "name": "Lead into memo",
+      "name": "Lead into wcat",
       "type": "@wirecat/n8n-nodes-wirecat.wireCatMemo",
       "typeVersion": 1,
       "position": [260, 0],
@@ -57,7 +57,7 @@
       "main": [
         [
           {
-            "node": "Lead into memo",
+            "node": "Lead into wcat",
             "type": "main",
             "index": 0
           }

@@ -18,7 +18,7 @@ import {
 } from "./envelope"
 import type { McpSession } from "./mcp"
 
-/** memo answered, but refused what was asked: the message is memo's own. */
+/** wcat answered, but refused what was asked: the message is wcat's own. */
 export class MemoRefusal extends Error {
   constructor(
     message: string,
@@ -56,7 +56,7 @@ interface Listed {
 }
 
 /**
- * The pipelines and organizations memo keeps for an account, read once an execution with `records list` (memo's MCP
+ * The pipelines and organizations wcat keeps for an account, read once an execution with `records list` (wcat's MCP
  * offers no lookup of one record). Past the newest 500 the node cannot tell, and says so with undefined.
  */
 export class KeptRecords {
@@ -75,12 +75,12 @@ export class KeptRecords {
   }
 
   private async read(account: string, type: string): Promise<Listed> {
-    const { content, error } = await call(this.session, "memo_read", {
+    const { content, error } = await call(this.session, "wcat_read", {
       command: "records list",
       arguments: { account, query: [`type:${type}`], limit: LIST_LIMIT },
     })
     if (error?.code === "not_found") return { byId: new Map(), complete: true }
-    if (error) throw refused(content, `memo would not list the ${type} records of ${account}`)
+    if (error) throw refused(content, `wcat would not list the ${type} records of ${account}`)
     const items = (content.items ?? []) as IDataObject[]
     const byId = new Map<string, Stored>()
     for (const one of items)
@@ -165,7 +165,7 @@ const recordsFor = async (
 const notFound = (receipt: Receipt) =>
   (receipt.refused ?? 0) > 0 && (receipt.errors ?? []).every((one) => one.code === "record.not-found")
 
-/** One item's call to memo, as the output items it gives. */
+/** One item's call to wcat, as the output items it gives. */
 export const runItem = async (
   fn: IExecuteFunctions,
   session: McpSession,
@@ -178,12 +178,12 @@ export const runItem = async (
   if (resource === "memory") {
     const [tool, args] =
       operation === "findCommand"
-        ? ["memo_tools_search", { query: text(fn, "words", index) }]
+        ? ["wcat_tools_search", { query: text(fn, "words", index) }]
         : operation === "search"
-          ? ["memo_read", { command: "search all", arguments: { query: text(fn, "query", index) } }]
-          : ["memo_read", { command: text(fn, "command", index), arguments: argumentsOf(fn, index) }]
+          ? ["wcat_read", { command: "search all", arguments: { query: text(fn, "query", index) } }]
+          : ["wcat_read", { command: text(fn, "command", index), arguments: argumentsOf(fn, index) }]
     const { content, error } = await call(session, tool as string, args as Record<string, unknown>)
-    if (error) throw refused(content, "memo refused the call")
+    if (error) throw refused(content, "wcat refused the call")
     return Array.isArray(content.items) ? (content.items as IDataObject[]) : ((content.item ?? content) as IDataObject)
   }
 
@@ -197,11 +197,11 @@ export const runItem = async (
     envelope.records = await recordsFor(fn, kept, account, resource, operation, index)
   }
   const command = resource === "envelope" && operation === "check" ? "records check" : "records import"
-  const { content, error } = await call(session, "memo_write", {
+  const { content, error } = await call(session, "wcat_write", {
     command,
     arguments: { account: accountOf(envelope), input: envelope },
   })
-  if (error) throw refused(content, "memo refused the import")
+  if (error) throw refused(content, "wcat refused the import")
   const receipt = (content.item ?? content) as Receipt
   if (command === "records import" && !receipt.refused) await kept.remember(accountOf(envelope), envelope.records)
   if (operation === "delete" && notFound(receipt)) {
@@ -210,7 +210,7 @@ export const runItem = async (
   }
   if (command === "records import" && (receipt.refused ?? 0) > 0) {
     const why = (receipt.errors ?? []).map((one) => `${one.pointer ?? ""} ${one.message ?? ""}`.trim()).join("; ")
-    throw new MemoRefusal(`memo refused ${receipt.refused} record(s): ${why}`, receipt)
+    throw new MemoRefusal(`wcat refused ${receipt.refused} record(s): ${why}`, receipt)
   }
   return receipt
 }

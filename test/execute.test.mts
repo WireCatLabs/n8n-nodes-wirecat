@@ -166,7 +166,7 @@ describe("WireCatMemo.execute", () => {
     )
     await expect(node.execute.call(executeContext(memo, [lead, bad]))).rejects.toBeInstanceOf(NodeOperationError)
     const read = { resource: "memory", operation: "read", command: "records delete", arguments: "{}" }
-    await expect(node.execute.call(executeContext(memo, [read]))).rejects.toThrow(/writes: call it with memo_write/)
+    await expect(node.execute.call(executeContext(memo, [read]))).rejects.toThrow(/writes: call it with wcat_write/)
     const amount = { ...lead, resource: "deal", additionalFields: { amount: "1,500", currency: "EUR" } }
     await expect(node.execute.call(executeContext(memo, [amount]))).rejects.toThrow(/send a number/)
   })
@@ -184,7 +184,7 @@ describe("WireCatMemo.execute", () => {
       executeContext(memo, [{ resource: "memory", operation: "search", query: "Anna" }]),
     )
     expect(out.map((one) => one.json)).toEqual([{ ref: "lead:1" }, { ref: "lead:2" }])
-    expect(memo.calls[0]).toMatchObject({ tool: "memo_read", command: "search all" })
+    expect(memo.calls[0]).toMatchObject({ tool: "wcat_read", command: "search all" })
   })
 
   it("passes a failed request on as an API error", async () => {

@@ -56,7 +56,7 @@ export const fakeMemo = () => {
   }
 
   const tool = (name: string, args: IDataObject): IDataObject => {
-    if (name === "memo_tools_search") return { items: [{ command: "leads list", writes: false }] }
+    if (name === "wcat_tools_search") return { items: [{ command: "leads list", writes: false }] }
     const command = String(args.command)
     const given = (args.arguments ?? {}) as IDataObject
     if (command === "records list") {
@@ -76,7 +76,7 @@ export const fakeMemo = () => {
     if (command === "records delete")
       return {
         isError: true,
-        error: { code: "validation_error", message: '"records delete" writes: call it with memo_write' },
+        error: { code: "validation_error", message: '"records delete" writes: call it with wcat_write' },
       }
     return { items: [] }
   }

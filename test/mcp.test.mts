@@ -30,12 +30,12 @@ describe("McpSession", () => {
       sse({ jsonrpc: "2.0", id, result: { structuredContent: { item: { created: 2 } }, content: [] } }),
     )
     const session = new McpSession(memo.send, { name: "test", version: "1" })
-    expect(await session.call("memo_write", { command: "records import" })).toEqual({
+    expect(await session.call("wcat_write", { command: "records import" })).toEqual({
       isError: false,
       structuredContent: { item: { created: 2 } },
       text: "",
     })
-    await session.call("memo_read", { command: "leads list" })
+    await session.call("wcat_read", { command: "leads list" })
     await session.close()
 
     expect(memo.sent.map((one) => one.body?.method ?? one.method)).toEqual([
@@ -47,19 +47,19 @@ describe("McpSession", () => {
     ])
     expect(memo.sent[0].headers["mcp-session-id"]).toBeUndefined()
     expect(memo.sent.slice(1).every((one) => one.headers["mcp-session-id"] === "s-1")).toBe(true)
-    expect(memo.sent[2].body?.params).toEqual({ name: "memo_write", arguments: { command: "records import" } })
+    expect(memo.sent[2].body?.params).toEqual({ name: "wcat_write", arguments: { command: "records import" } })
   })
 
   it("reports memo's refusal of a tool as a result, and a protocol error as McpError", async () => {
     const refused = fakeMemo((id) =>
       sse({ jsonrpc: "2.0", id, result: { isError: true, content: [{ type: "text", text: "permission_error" }] } }),
     )
-    const result = await new McpSession(refused.send, { name: "test", version: "1" }).call("memo_write", {})
+    const result = await new McpSession(refused.send, { name: "test", version: "1" }).call("wcat_write", {})
     expect(result).toEqual({ isError: true, text: "permission_error" })
 
     const broken = fakeMemo((id) => sse({ jsonrpc: "2.0", id, error: { code: -32602, message: "bad params" } }))
-    await expect(new McpSession(broken.send, { name: "test", version: "1" }).call("memo_write", {})).rejects.toThrow(
-      new McpError("memo refused tools/call: bad params"),
+    await expect(new McpSession(broken.send, { name: "test", version: "1" }).call("wcat_write", {})).rejects.toThrow(
+      new McpError("wcat refused tools/call: bad params"),
     )
   })
 
@@ -89,10 +89,10 @@ describe("a session memo dropped", () => {
     }
     const session = new McpSession(send, { name: "test", version: "1" })
     await session.open()
-    expect(await session.call("memo_read", {})).toMatchObject({ isError: false })
+    expect(await session.call("wcat_read", {})).toMatchObject({ isError: false })
     expect(memo.sent.filter((one) => one.body?.method === "initialize")).toHaveLength(2)
 
     gone = 2
-    await expect(session.call("memo_read", {})).rejects.toThrow(/no answer to tools\/call \(HTTP 404\)/)
+    await expect(session.call("wcat_read", {})).rejects.toThrow(/no answer to tools\/call \(HTTP 404\)/)
   })
 })

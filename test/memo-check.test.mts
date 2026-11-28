@@ -5,26 +5,26 @@ import { join } from "node:path"
 import { afterAll, describe, expect, it } from "vitest"
 import { builtEnvelopes } from "./envelopes.mjs"
 
-const memo = spawnSync("memo", ["--version"], { encoding: "utf8" }).status === 0
+const wcat = spawnSync("wcat-wirecat", ["--version"], { encoding: "utf8" }).status === 0
 
-// A throwaway store and folders, so the check never reads or locks the owner's memo, nor reaches the keyring.
-// Vitest's own variables stay out: memo run under VITEST behaves as in its own tests and crashes here.
+// A throwaway store and folders, so the check never reads or locks the owner's wcat, nor reaches the keyring.
+// Vitest's own variables stay out: wcat run under VITEST behaves as in its own tests and crashes here.
 const dir = mkdtempSync(join(tmpdir(), "n8n-nodes-wirecat-"))
 const sandbox = () => {
   return {
     PATH: process.env.PATH,
     HOME: process.env.HOME,
     DBUS_SESSION_BUS_ADDRESS: "disabled:",
-    MEMO_NO_UPDATE_CHECK: "1",
-    MEMO_CONFIG_DIR: join(dir, "config"),
-    MEMO_STATE_DIR: join(dir, "state"),
-    MEMO_CACHE_DIR: join(dir, "cache"),
+    WCAT_NO_UPDATE_CHECK: "1",
+    WCAT_CONFIG_DIR: join(dir, "config"),
+    WCAT_STATE_DIR: join(dir, "state"),
+    WCAT_CACHE_DIR: join(dir, "cache"),
     WIRECAT_STATE_DIR: join(dir, "wirecat"),
     MESSAGING_STORE: join(dir, "store.db"),
   }
 }
 
-describe.skipIf(!memo)("memo records check", () => {
+describe.skipIf(!wcat)("wcat records check", () => {
   const env = sandbox()
   afterAll(() => rmSync(dir, { recursive: true, force: true }))
 
@@ -32,7 +32,7 @@ describe.skipIf(!memo)("memo records check", () => {
   it.each(Object.entries(builtEnvelopes).filter(([name]) => name !== "deleted deal"))(
     "accepts every record of the %s envelope",
     (_name, envelope) => {
-      const out = execFileSync("memo", ["records", "check", "-", "--account", "n8n:test", "--json"], {
+      const out = execFileSync("wcat-wirecat", ["records", "check", "-", "--account", "n8n:test", "--json"], {
         env,
         input: JSON.stringify(envelope),
         encoding: "utf8",
